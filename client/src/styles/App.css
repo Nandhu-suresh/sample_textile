@@ -1,0 +1,52 @@
+/* Global Responsive Utilities */
+
+/* Navbar Responsiveness */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        padding: 1rem !important;
+    }
+
+    nav>div:last-child {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    nav a {
+        margin-left: 0 !important;
+        display: block;
+        padding: 0.5rem;
+    }
+}
+
+/* Product Grid Responsiveness */
+@media (max-width: 600px) {
+    .product-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* General Layout */
+/* General Layout */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Helper to center content if needed */
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}

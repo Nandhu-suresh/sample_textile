@@ -48,7 +48,7 @@ const Cart = () => {
                         {cart.map(item => (
                             <div key={item._id} className="flex flex-col sm:flex-row items-center bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 group">
                                 <img
-                                    src={item.images[0] ? (item.images[0].startsWith('/') ? `http://localhost:5000${item.images[0]}` : item.images[0]) : 'https://via.placeholder.com/150'}
+                                    src={item.images[0] ? (item.images[0].startsWith('/') ? `https://sample-textile.onrender.com${item.images[0]}` : item.images[0]) : 'https://via.placeholder.com/150'}
                                     alt={item.title}
                                     className="w-32 h-32 object-contain mr-0 sm:mr-6 mb-4 sm:mb-0 transform group-hover:scale-105 transition-transform duration-500"
                                 />

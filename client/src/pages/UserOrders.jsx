@@ -7,7 +7,7 @@ const UserOrders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/orders/myorders', {
+                const res = await axios.get('https://sample-textile.onrender.com/api/orders/myorders', {
                     headers: { 'x-auth-token': token }
                 });
                 setOrders(res.data);

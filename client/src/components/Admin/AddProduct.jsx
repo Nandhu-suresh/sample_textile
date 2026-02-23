@@ -41,7 +41,7 @@ const AddProduct = () => {
                 }
             };
 
-            await axios.post('http://localhost:5000/api/products', data, config);
+            await axios.post('https://sample-textile.onrender.com/api/products', data, config);
             setFormData({ title: '', description: '', price: '', category: '', stock: '' });
             setImageFile(null);
             alert('Product Added Successfully!');

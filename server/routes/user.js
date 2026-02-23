@@ -70,12 +70,12 @@ router.post('/upload-avatar', auth, upload.single('avatar'), async (req, res) =>
 
         // Construct the file path (assuming server serves 'uploads' folder statically)
         // If your server is at localhost:5000, and you serve 'uploads', url is:
-        // http://localhost:5000/uploads/filename
+        // https://sample-textile.onrender.com/uploads/filename
         // Ideally, store the relative path or full URL. Storing relative path is flexible.
         // Let's store the full URL or consistent relative path.
         // Based on server.js: app.use('/uploads', express.static('uploads'));
 
-        const avatarUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+        const avatarUrl = `https://sample-textile.onrender.com/uploads/${req.file.filename}`;
 
         user.avatar = avatarUrl;
         await user.save();

@@ -11,7 +11,7 @@ const OrderDetails = () => {
     useEffect(() => {
         const fetchOrder = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/orders/${id}`, {
+                const res = await axios.get(`https://sample-textile.onrender.com/api/orders/${id}`, {
                     headers: { 'x-auth-token': token }
                 });
                 setOrder(res.data);
@@ -113,7 +113,7 @@ const OrderDetails = () => {
                                                     // Remove leading slash if present to avoid double slashes if we append to base with slash
                                                     const cleanSrc = src.startsWith('/') ? src.substring(1) : src;
                                                     // If it looks like an internal path (e.g. uploads/), prepend server URL
-                                                    return `http://localhost:5000/${cleanSrc}`;
+                                                    return `https://sample-textile.onrender.com/${cleanSrc}`;
                                                 };
                                                 const finalSrc = getImageUrl(imgSource);
 

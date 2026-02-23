@@ -14,7 +14,7 @@ const Shop = () => {
         const fetchProducts = async () => {
             try {
                 // Determine API URL based on environment or hardcode for now
-                const res = await axios.get('http://localhost:5000/api/products');
+                const res = await axios.get('https://sample-textile.onrender.com/api/products');
                 setProducts(res.data);
                 setLoading(false);
             } catch (err) {

@@ -20,7 +20,7 @@ const EditProfile = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/auth/me', {
+                const res = await axios.get('https://sample-textile.onrender.com/api/auth/me', {
                     headers: { 'x-auth-token': token }
                 });
                 const user = res.data;
@@ -53,7 +53,7 @@ const EditProfile = () => {
         e.preventDefault();
         setError('');
         try {
-            await axios.put('http://localhost:5000/api/auth/profile', formData, {
+            await axios.put('https://sample-textile.onrender.com/api/auth/profile', formData, {
                 headers: { 'x-auth-token': token }
             });
             navigate('/profile');

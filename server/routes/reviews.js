@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', auth, upload.single('image'), async (req, res) => {
     const { name, rating, text } = req.body;
-    const image = req.file ? `http://localhost:5000/uploads/${req.file.filename}` : '';
+    const image = req.file ? `https://sample-textile.onrender.com/uploads/${req.file.filename}` : '';
 
     try {
         const newReview = new Review({

@@ -20,10 +20,10 @@ const Analytics = () => {
 
                 const headers = { 'x-auth-token': token };
 
-                const statsRes = await axios.get('http://localhost:5000/api/admin/stats', { headers });
+                const statsRes = await axios.get('https://sample-textile.onrender.com/api/admin/stats', { headers });
                 setStats(statsRes.data);
 
-                const historyRes = await axios.get('http://localhost:5000/api/admin/sales-history', { headers });
+                const historyRes = await axios.get('https://sample-textile.onrender.com/api/admin/sales-history', { headers });
                 setSalesHistory(historyRes.data);
 
                 setLoading(false);

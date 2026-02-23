@@ -12,7 +12,7 @@ const AdminReviews = () => {
 
     const fetchReviews = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/reviews');
+            const res = await axios.get('https://sample-textile.onrender.com/api/reviews');
             setReviews(res.data);
             setLoading(false);
         } catch (err) {
@@ -25,7 +25,7 @@ const AdminReviews = () => {
         if (window.confirm('Are you sure you want to delete this review? This action cannot be undone.')) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:5000/api/reviews/${id}`, {
+                await axios.delete(`https://sample-textile.onrender.com/api/reviews/${id}`, {
                     headers: { 'x-auth-token': token }
                 });
                 setReviews(reviews.filter(review => review._id !== id));

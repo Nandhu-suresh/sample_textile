@@ -14,7 +14,7 @@ const Wishlist = () => {
                 return;
             }
             try {
-                const res = await axios.get('http://localhost:5000/api/user/wishlist', {
+                const res = await axios.get('https://sample-textile.onrender.com/api/user/wishlist', {
                     headers: { 'x-auth-token': token }
                 });
                 setWishlistItems(res.data);

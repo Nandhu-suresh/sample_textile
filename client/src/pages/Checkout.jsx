@@ -55,7 +55,7 @@ const Checkout = () => {
                 }
 
                 // If we implemented an endpoint to get full profile including address updates:
-                // const res = await axios.get('http://localhost:5000/api/auth/me', { headers: { 'x-auth-token': token } });
+                // const res = await axios.get('https://sample-textile.onrender.com/api/auth/me', { headers: { 'x-auth-token': token } });
                 // if(res.data) setAddress(...) 
             } catch (err) {
                 console.error("Error fetching profile", err);
@@ -117,7 +117,7 @@ const Checkout = () => {
                 }
 
                 // Create Order on Backend
-                const result = await axios.post('http://localhost:5000/api/payment/order', {
+                const result = await axios.post('https://sample-textile.onrender.com/api/payment/order', {
                     amount: total
                 }, {
                     headers: { 'x-auth-token': token }
@@ -141,7 +141,7 @@ const Checkout = () => {
                     order_id: order_id,
                     handler: async function (response) {
                         try {
-                            await axios.post('http://localhost:5000/api/orders', {
+                            await axios.post('https://sample-textile.onrender.com/api/orders', {
                                 orderItems,
                                 shippingAddress,
                                 totalPrice: total,
@@ -186,7 +186,7 @@ const Checkout = () => {
 
             } else {
                 // COD Flow
-                await axios.post('http://localhost:5000/api/orders', {
+                await axios.post('https://sample-textile.onrender.com/api/orders', {
                     orderItems,
                     shippingAddress,
                     totalPrice: total,
@@ -359,7 +359,7 @@ const Checkout = () => {
                                                 {item.quantity}
                                             </span>
                                             <img
-                                                src={item.images[0] ? (item.images[0].startsWith('/') ? `http://localhost:5000${item.images[0]}` : item.images[0]) : 'https://via.placeholder.com/50'}
+                                                src={item.images[0] ? (item.images[0].startsWith('/') ? `https://sample-textile.onrender.com${item.images[0]}` : item.images[0]) : 'https://via.placeholder.com/50'}
                                                 alt={item.title}
                                                 className="w-12 h-12 object-cover rounded border border-gray-200"
                                             />

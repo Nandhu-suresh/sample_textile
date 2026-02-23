@@ -23,7 +23,7 @@ const UserProfile = () => {
 
     const fetchUserProfile = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/auth/me', {
+            const res = await axios.get('https://sample-textile.onrender.com/api/auth/me', {
                 headers: { 'x-auth-token': token }
             });
             setUser(res.data);
@@ -46,7 +46,7 @@ const UserProfile = () => {
         formData.append('avatar', file);
 
         try {
-            const res = await axios.post('http://localhost:5000/api/user/upload-avatar', formData, {
+            const res = await axios.post('https://sample-textile.onrender.com/api/user/upload-avatar', formData, {
                 headers: {
                     'x-auth-token': token,
                     'Content-Type': 'multipart/form-data'

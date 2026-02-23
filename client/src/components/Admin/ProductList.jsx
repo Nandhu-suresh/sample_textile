@@ -13,7 +13,7 @@ const ProductList = () => {
 
     const fetchProducts = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/products');
+            const res = await axios.get('https://sample-textile.onrender.com/api/products');
             setProducts(res.data);
         } catch (err) {
             console.error(err);
@@ -28,7 +28,7 @@ const ProductList = () => {
                     'x-auth-token': token
                 }
             };
-            await axios.delete(`http://localhost:5000/api/products/${id}`, config);
+            await axios.delete(`https://sample-textile.onrender.com/api/products/${id}`, config);
             fetchProducts();
         } catch (err) {
             console.error(err);
@@ -56,7 +56,7 @@ const ProductList = () => {
                         <div key={product._id} className="group bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
                             <div className="relative h-64 overflow-hidden bg-gray-100">
                                 <img
-                                    src={product.images && product.images[0] ? (product.images[0].startsWith('/') ? `http://localhost:5000${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/200'}
+                                    src={product.images && product.images[0] ? (product.images[0].startsWith('/') ? `https://sample-textile.onrender.com${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/200'}
                                     alt={product.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />

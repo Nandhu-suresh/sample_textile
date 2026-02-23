@@ -99,7 +99,7 @@ const ReviewForm = ({ onReviewSubmit }) => {
                 }
             };
 
-            const res = await axios.post('http://localhost:5000/api/reviews', formData, config);
+            const res = await axios.post('https://sample-textile.onrender.com/api/reviews', formData, config);
             onReviewSubmit(res.data);
             setName('');
             setRating(5);
@@ -172,7 +172,7 @@ const ReviewSection = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/reviews');
+                const res = await axios.get('https://sample-textile.onrender.com/api/reviews');
                 setReviews(res.data);
             } catch (err) {
                 console.error('Error fetching reviews:', err);

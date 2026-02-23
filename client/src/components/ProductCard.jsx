@@ -27,7 +27,7 @@ const ProductCard = ({ product, isWishlisted: propIsWishlisted }) => {
 
     const checkWishlistStatus = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/user/wishlist', {
+            const res = await axios.get('https://sample-textile.onrender.com/api/user/wishlist', {
                 headers: { 'x-auth-token': token }
             });
             // res.data is array of objects populated. We need to check IDs.
@@ -50,7 +50,7 @@ const ProductCard = ({ product, isWishlisted: propIsWishlisted }) => {
         }
 
         try {
-            await axios.post(`http://localhost:5000/api/user/wishlist/${product._id}`, {}, {
+            await axios.post(`https://sample-textile.onrender.com/api/user/wishlist/${product._id}`, {}, {
                 headers: { 'x-auth-token': token }
             });
             setIsWishlisted(!isWishlisted);
@@ -106,7 +106,7 @@ const ProductCard = ({ product, isWishlisted: propIsWishlisted }) => {
 
                 <Link to={`/product/${product._id}`} className="block overflow-hidden h-48">
                     <img
-                        src={product.images[0] ? (product.images[0].startsWith('/') ? `http://localhost:5000${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/300'}
+                        src={product.images[0] ? (product.images[0].startsWith('/') ? `https://sample-textile.onrender.com${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/300'}
                         alt={product.title}
                         className="w-full h-full object-contain mx-auto transition-transform duration-700 ease-in-out group-hover:scale-105"
                     />

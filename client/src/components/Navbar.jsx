@@ -43,7 +43,7 @@ const Navbar = () => {
         try {
             // We can create a lightweight endpoint for count if needed, but for now fetching all is okay
             // Or just fetch ids.
-            const response = await fetch('http://localhost:5000/api/user/wishlist', {
+            const response = await fetch('https://sample-textile.onrender.com/api/user/wishlist', {
                 headers: { 'x-auth-token': token }
             });
             if (response.ok) {

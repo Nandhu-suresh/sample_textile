@@ -12,7 +12,7 @@ const OrderDetails = () => {
         const fetchOrder = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5000/api/orders/admin/orders/${id}`, {
+                const response = await fetch(`https://sample-textile.onrender.com/api/orders/admin/orders/${id}`, {
                     headers: { 'x-auth-token': token }
                 });
                 const data = await response.json();
@@ -42,7 +42,7 @@ const OrderDetails = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:5000/api/orders/admin/order/${id}/process`, {
+            const response = await fetch(`https://sample-textile.onrender.com/api/orders/admin/order/${id}/process`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const OrderDetails = () => {
                 {order.orderItems.map((item, index) => (
                     <div key={index} className="flex items-center mb-4 border-b border-gray-50 pb-2">
                         <img
-                            src={`http://localhost:5000${item.image}`}
+                            src={`https://sample-textile.onrender.com${item.image}`}
                             alt={item.title}
                             className="w-[60px] h-[60px] object-cover mr-4 rounded"
                         />

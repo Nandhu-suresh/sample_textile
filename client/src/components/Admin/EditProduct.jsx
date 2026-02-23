@@ -18,7 +18,7 @@ const EditProduct = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+                const res = await axios.get(`https://sample-textile.onrender.com/api/products/${id}`);
                 const { title, description, price, category, stock } = res.data;
                 setFormData({ title, description, price, category, stock });
                 setLoading(false);
@@ -45,7 +45,7 @@ const EditProduct = () => {
             };
             // Send as JSON since we aren't updating image here (simplification)
             // Backend PUT /:id expects req.body
-            await axios.put(`http://localhost:5000/api/products/${id}`, formData, config);
+            await axios.put(`https://sample-textile.onrender.com/api/products/${id}`, formData, config);
             alert('Product Updated Successfully!');
             navigate('/admin/products');
         } catch (err) {

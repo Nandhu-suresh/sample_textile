@@ -17,7 +17,7 @@ const Home = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/products');
+                const res = await axios.get('https://sample-textile.onrender.com/api/products');
                 // Fetch only top 4 products for the featured section
                 setProducts(res.data.slice(0, 4));
                 setLoading(false);

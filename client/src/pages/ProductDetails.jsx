@@ -13,7 +13,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+                const res = await axios.get(`https://sample-textile.onrender.com/api/products/${id}`);
                 setProduct(res.data);
                 setLoading(false);
             } catch (err) {
@@ -32,7 +32,7 @@ const ProductDetails = () => {
 
     const checkWishlistStatus = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/user/wishlist', {
+            const res = await axios.get('https://sample-textile.onrender.com/api/user/wishlist', {
                 headers: { 'x-auth-token': token }
             });
             const found = res.data.find(item => item._id === product._id);
@@ -48,7 +48,7 @@ const ProductDetails = () => {
             return;
         }
         try {
-            await axios.post(`http://localhost:5000/api/user/wishlist/${product._id}`, {}, {
+            await axios.post(`https://sample-textile.onrender.com/api/user/wishlist/${product._id}`, {}, {
                 headers: { 'x-auth-token': token }
             });
             setIsWishlisted(!isWishlisted);
@@ -91,7 +91,7 @@ const ProductDetails = () => {
     return (
         <div className="flex p-16 gap-16 justify-center flex-wrap">
             <img
-                src={product.images[0] ? (product.images[0].startsWith('/') ? `http://localhost:5000${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/400'}
+                src={product.images[0] ? (product.images[0].startsWith('/') ? `https://sample-textile.onrender.com${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/400'}
                 alt={product.title}
                 className="max-w-[500px] w-full object-cover"
             />
@@ -135,8 +135,8 @@ const ProductDetails = () => {
                     onClick={addToCart}
                     disabled={product.stock === 0}
                     className={`px-8 py-4 border-none text-xl cursor-pointer transition-all duration-300 font-lato ${product.stock > 0
-                            ? 'bg-secondary text-white hover:bg-opacity-90'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-secondary text-white hover:bg-opacity-90'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                 >
                     {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}

@@ -39,9 +39,13 @@ const ProductCard = ({ product, isWishlisted: propIsWishlisted }) => {
     };
 
     const toggleWishlist = async (e) => {
-        e.preventDefault(); // Prevent Link navigation
+        e.preventDefault();
+        e.stopPropagation();
+
         if (!token) {
             alert('Please login to add to wishlist');
+            // Optional: redirect to login here if desired, but alert is often enough for "not logged in" state.
+            // However, 401 handling below is for "token invalid/expired".
             return;
         }
 
@@ -53,13 +57,19 @@ const ProductCard = ({ product, isWishlisted: propIsWishlisted }) => {
             window.dispatchEvent(new Event('wishlistUpdated'));
         } catch (err) {
             console.error(err);
-            alert('Error updating wishlist');
+            if (err.response && err.response.status === 401) {
+                alert('Session expired. Please login again.');
+                localStorage.removeItem('token');
+                navigate('/login');
+            } else {
+                alert('Error updating wishlist');
+            }
         }
     };
 
     const addToCart = (e) => {
-        e.preventDefault(); // Prevent Link navigation if button is inside Link (though it's outside here, good practice or just in case)
-        e.stopPropagation(); // Prevent bubbling to Link
+        e.preventDefault();
+        e.stopPropagation();
 
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const existingItem = cart.find(item => item._id === product._id);
@@ -77,32 +87,53 @@ const ProductCard = ({ product, isWishlisted: propIsWishlisted }) => {
             return;
         }
 
-        alert('Added to cart!');
+        navigate('/cart');
     };
 
     return (
-        <div className="border border-gray-200 p-4 text-center transition-transform duration-200 relative hover:shadow-lg">
-            <span
-                className={`absolute top-2 right-2 text-2xl cursor-pointer z-10 bg-white/70 rounded-full p-1 leading-none ${isWishlisted ? 'text-red-600' : 'text-gray-300'}`}
-                onClick={toggleWishlist}
-            >
-                &#10084; {/* Heart Entity */}
-            </span>
-            <Link to={`/product/${product._id}`}>
-                <img
-                    src={product.images[0] ? (product.images[0].startsWith('/') ? `http://localhost:5000${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/300'}
-                    alt={product.title}
-                    className="w-full h-[300px] object-cover mb-4"
-                />
-                <h3 className="text-lg my-2 font-playfair text-secondary">{product.title}</h3>
-                <p className="text-gray-500 italic font-lato">₹{product.price}</p>
-            </Link>
-            <button
-                onClick={addToCart}
-                className="mt-4 px-4 py-2 bg-transparent border border-secondary text-secondary cursor-pointer hover:bg-secondary hover:text-white transition-colors font-lato"
-            >
-                Add to Cart
-            </button>
+        <div className="group bg-white rounded-lg shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative border border-gray-100 flex flex-col h-full">
+            <div className="relative overflow-hidden text-center">
+                {/* Increased z-index and ensured consistent positioning */}
+                <button
+                    type="button"
+                    className={`absolute top-2 right-2 text-lg cursor-pointer z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/90 shadow-sm transition-transform duration-200 hover:scale-110 border-none outline-none ${isWishlisted ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}
+                    onClick={toggleWishlist}
+                    title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                    <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart`}></i>
+                    <span className="sr-only">{isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}</span>
+                </button>
+
+                <Link to={`/product/${product._id}`} className="block overflow-hidden h-48">
+                    <img
+                        src={product.images[0] ? (product.images[0].startsWith('/') ? `http://localhost:5000${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/300'}
+                        alt={product.title}
+                        className="w-full h-full object-contain mx-auto transition-transform duration-700 ease-in-out group-hover:scale-105"
+                    />
+                </Link>
+            </div>
+
+            <div className="p-4 flex flex-col flex-grow text-center">
+                <Link to={`/product/${product._id}`} className="block">
+                    <h3 className="text-base font-playfair font-bold text-gray-800 mb-1 hover:text-secondary transition-colors line-clamp-1" title={product.title}>
+                        {product.title}
+                    </h3>
+                    <p className="text-xs text-gray-500 font-lato mb-2 line-clamp-2" title={product.description}>
+                        {product.description}
+                    </p>
+                    <p className="text-secondary font-medium font-lato text-base">₹{product.price}</p>
+                </Link>
+
+                <div className="mt-auto pt-3">
+                    <button
+                        onClick={addToCart}
+                        className="w-full py-2 rounded-full border border-secondary text-secondary text-sm font-medium hover:bg-secondary hover:text-white transition-all duration-300 shadow-sm hover:shadow-md transform active:scale-95 flex items-center justify-center gap-2"
+                    >
+                        <i className="fas fa-shopping-bag"></i>
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };

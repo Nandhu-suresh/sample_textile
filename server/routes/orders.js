@@ -1,19 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 
-// Get logged in user orders
-router.get('/myorders', auth, async (req, res) => {
-    try {
-        const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
-        res.json(orders);
-    } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
-
-// Create new order (Optional for now, but good to have for testing/completeness if Checkout is implemented later)
+// Create new order
 router.post('/', auth, async (req, res) => {
     const {
         orderItems,
@@ -24,15 +15,75 @@ router.post('/', auth, async (req, res) => {
     if (orderItems && orderItems.length === 0) {
         return res.status(400).json({ message: 'No order items' });
     } else {
-        const order = new Order({
-            orderItems,
-            user: req.user.id,
-            shippingAddress,
-            totalPrice
-        });
+        try {
+            // 1. Check stock availability for all items
+            for (const item of orderItems) {
+                const product = await Product.findById(item.product);
+                if (!product) {
+                    return res.status(404).json({ message: `Product not found: ${item.name}` });
+                }
+                if (product.stock < item.quantity) {
+                    return res.status(400).json({ message: `Insufficient stock for ${product.title}. Available: ${product.stock}` });
+                }
+            }
 
-        const createdOrder = await order.save();
-        res.status(201).json(createdOrder);
+            // 2. Decrement stock
+            for (const item of orderItems) {
+                const product = await Product.findById(item.product);
+                if (product) {
+                    product.stock = product.stock - item.quantity;
+                    await product.save();
+                }
+            }
+
+            // 3. Create Order
+            const order = new Order({
+                orderItems,
+                user: req.user.id,
+                shippingAddress,
+                totalPrice
+            });
+
+            const createdOrder = await order.save();
+            res.status(201).json(createdOrder);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server Error during order creation' });
+        }
+    }
+});
+
+// Get logged-in user's orders
+router.get('/myorders', auth, async (req, res) => {
+    try {
+        const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+        res.json(orders);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
+// Get single order by ID (User specific)
+router.get('/:id', auth, async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id).populate('user', 'name email').populate('orderItems.product', 'title image price');
+
+        if (order) {
+            // Ensure the user requesting the order is the one who placed it (or admin)
+            if (order.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
+                return res.status(401).json({ message: 'Not authorized to view this order' });
+            }
+            res.json(order);
+        } else {
+            res.status(404).json({ message: 'Order not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        if (error.kind === 'ObjectId') {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 

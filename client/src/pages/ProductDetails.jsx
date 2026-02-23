@@ -55,7 +55,13 @@ const ProductDetails = () => {
             window.dispatchEvent(new Event('wishlistUpdated'));
         } catch (err) {
             console.error(err);
-            alert('Error updating wishlist');
+            if (err.response && err.response.status === 401) {
+                alert('Session expired. Please login again.');
+                localStorage.removeItem('token');
+                navigate('/login');
+            } else {
+                alert('Error updating wishlist');
+            }
         }
     };
 
@@ -76,7 +82,7 @@ const ProductDetails = () => {
             return;
         }
 
-        alert('Added to cart!');
+        navigate('/cart');
     };
 
     if (loading) return <p style={{ textAlign: 'center', marginTop: '2rem' }}>Loading...</p>;
@@ -99,13 +105,41 @@ const ProductDetails = () => {
                         &#10084;
                     </span>
                 </div>
-                <p className="text-2xl text-gray-500 mb-8 font-lato">₹{product.price}</p>
+                <p className="text-2xl text-gray-500 mb-4 font-lato">₹{product.price}</p>
+
+                {/* Stock Status */}
+                <div className="mb-6">
+                    {product.stock > 0 ? (
+                        <div>
+                            <span className="inline-block bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full font-bold mb-2">
+                                In Stock
+                            </span>
+                            {product.stock < 10 && (
+                                <p className="text-red-500 text-sm font-bold">
+                                    Only {product.stock} left in stock - order soon!
+                                </p>
+                            )}
+                            <p className="text-gray-500 text-sm mt-1">
+                                Available Quantity: {product.stock}
+                            </p>
+                        </div>
+                    ) : (
+                        <span className="inline-block bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full font-bold">
+                            Out of Stock
+                        </span>
+                    )}
+                </div>
+
                 <p className="mb-8 leading-relaxed font-lato text-secondary">{product.description}</p>
                 <button
                     onClick={addToCart}
-                    className="px-8 py-4 bg-secondary text-white border-none text-xl cursor-pointer hover:bg-opacity-90 transition-opacity font-lato"
+                    disabled={product.stock === 0}
+                    className={`px-8 py-4 border-none text-xl cursor-pointer transition-all duration-300 font-lato ${product.stock > 0
+                            ? 'bg-secondary text-white hover:bg-opacity-90'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
                 >
-                    Add to Cart
+                    {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </button>
             </div>
         </div>

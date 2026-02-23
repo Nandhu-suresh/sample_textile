@@ -8,6 +8,7 @@ const Shop = () => {
     const [loading, setLoading] = useState(true);
     const [searchParams] = useSearchParams();
     const searchQuery = searchParams.get('search') || '';
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -24,13 +25,39 @@ const Shop = () => {
         fetchProducts();
     }, []);
 
-    const filteredProducts = products.filter(product =>
-        product.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const categories = ['All', ...new Set(products.map(product => product.category))];
+
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <div>
             <h1 className="text-center mt-8 text-3xl font-playfair text-secondary">Shop Collection</h1>
+
+            <div className="flex justify-start px-8 mt-6 mb-4">
+                <div className="relative">
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 shadow-sm cursor-pointer min-w-[200px]"
+                    >
+                        {categories.map((category, index) => (
+                            <option key={index} value={category}>
+                                {category}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
             {searchQuery && (
                 <p className="text-center text-gray-500 mt-2">
                     Showing results for "{searchQuery}"

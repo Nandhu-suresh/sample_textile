@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const AddProduct = () => {
+const EditProduct = () => {
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -9,57 +12,53 @@ const AddProduct = () => {
         category: '',
         stock: ''
     });
-    const [imageFile, setImageFile] = useState(null);
-
+    const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+                const { title, description, price, category, stock } = res.data;
+                setFormData({ title, description, price, category, stock });
+                setLoading(false);
+            } catch (err) {
+                console.error(err);
+                alert('Error fetching product details');
+                navigate('/admin/products');
+            }
+        };
+        fetchProduct();
+    }, [id, navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleFileChange = (e) => {
-        setImageFile(e.target.files[0]);
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const data = new FormData();
-            data.append('title', formData.title);
-            data.append('description', formData.description);
-            data.append('price', formData.price);
-            data.append('category', formData.category);
-            data.append('stock', formData.stock);
-            if (imageFile) {
-                data.append('image', imageFile);
-            }
-
             const config = {
                 headers: {
-                    'x-auth-token': token,
-                    'Content-Type': 'multipart/form-data'
+                    'x-auth-token': token
                 }
             };
-
-            await axios.post('http://localhost:5000/api/products', data, config);
-            setFormData({ title: '', description: '', price: '', category: '', stock: '' });
-            setImageFile(null);
-            alert('Product Added Successfully!');
-            // Use window.location as valid navigate might need hook context verification, 
-            // but we have navigate from context if we used it. 
-            // Wait, AddProduct structure (Step 338) doesn't use useNavigate!
-            // I need to add it or use window.location. window.location is safer given I can't see imports change easily here without larger repl.
-            // Actually, I can check specific lines.
-            window.location.href = '/admin/products';
+            // Send as JSON since we aren't updating image here (simplification)
+            // Backend PUT /:id expects req.body
+            await axios.put(`http://localhost:5000/api/products/${id}`, formData, config);
+            alert('Product Updated Successfully!');
+            navigate('/admin/products');
         } catch (err) {
             console.error(err);
-            alert('Error adding product. Please try again.');
+            alert('Error updating product. Please try again.');
         }
     };
 
+    if (loading) return <div>Loading...</div>;
+
     return (
         <div>
-            <h2 className="mb-8 font-playfair text-2xl text-secondary">Add New Product</h2>
+            <h2 className="mb-8 font-playfair text-2xl text-secondary">Edit Product</h2>
             <form onSubmit={handleSubmit} className="flex flex-col max-w-[600px] gap-6 bg-white p-8 rounded-lg shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
                 <input
                     type="text"
@@ -108,22 +107,12 @@ const AddProduct = () => {
                     className="p-4 text-base border border-gray-300 rounded outline-none focus:border-secondary transition-colors"
                 />
 
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm text-gray-600">Product Image</label>
-                    <input
-                        type="file"
-                        name="image"
-                        onChange={handleFileChange}
-                        className="p-4 text-base border border-gray-300 rounded outline-none focus:border-secondary transition-colors"
-                    />
-                </div>
-
                 <button type="submit" className="p-4 bg-secondary text-white border-none text-lg rounded mt-4 cursor-pointer transition-colors hover:bg-opacity-90">
-                    Add Product
+                    Update Product
                 </button>
             </form>
         </div>
     );
 };
 
-export default AddProduct;
+export default EditProduct;

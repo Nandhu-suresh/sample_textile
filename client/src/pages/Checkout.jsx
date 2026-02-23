@@ -83,6 +83,13 @@ const Checkout = () => {
         setLoading(true);
 
         const token = localStorage.getItem('token');
+        console.log('Token from localStorage:', token); // Debugging
+
+        if (!token) {
+            alert('Your session has expired or you are not logged in. Please login again.');
+            navigate('/login');
+            return;
+        }
 
         // Construct Order Payload matching server/models/Order.js
         const orderItems = cart.map(item => ({
@@ -195,7 +202,17 @@ const Checkout = () => {
             }
         } catch (err) {
             console.error(err);
-            alert('Failed to place order. Please try again.');
+            if (err.response && err.response.status === 401) {
+                alert('Session expired. Please login again.');
+                localStorage.removeItem('token'); // Clear invalid token
+                localStorage.removeItem('user');
+                navigate('/login');
+                return;
+            }
+            const errorMessage = err.response && err.response.data && err.response.data.message
+                ? err.response.data.message
+                : 'Failed to place order. Please try again.';
+            alert(errorMessage);
             setLoading(false);
         }
     };
@@ -205,101 +222,230 @@ const Checkout = () => {
     }
 
     return (
-        <div className="p-8 max-w-[1000px] mx-auto flex gap-8 flex-wrap">
-            <div className="flex-1 min-w-[300px]">
-                <h2 className="mb-6 border-b-2 border-secondary pb-2 font-playfair text-2xl text-secondary">Shipping Address</h2>
-                <form onSubmit={handlePlaceOrder} id="checkout-form">
-                    <div className="mb-4">
-                        <label className="block mb-2 font-lato">Name</label>
-                        <input type="text" name="name" value={address.name} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block mb-2 font-lato">Email</label>
-                        <input type="email" name="email" value={address.email} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block mb-2 font-lato">Phone</label>
-                        <input type="text" name="phone" value={address.phone} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                    </div>
+        <div className="min-h-screen bg-gray-50 p-8 font-lato relative">
+            <button
+                onClick={() => navigate('/cart')}
+                className="absolute top-2 right-6 lg:top-4 lg:right-12 text-gray-500 hover:text-red-500 transition-colors duration-300 bg-white rounded-full p-2 shadow-sm hover:shadow-md w-10 h-10 flex items-center justify-center z-10"
+                title="Return to Cart"
+            >
+                <i className="fas fa-times text-xl"></i>
+            </button>
+            <h1 className="text-center text-4xl font-playfair mb-12 text-secondary">Checkout</h1>
+            <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    <div className="mb-4">
-                        <label className="block mb-2 font-lato">Address</label>
-                        <textarea name="address" value={address.address} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded min-h-[80px]"></textarea>
-                    </div>
-                    <div className="flex gap-4">
-                        <div className="mb-4 flex-1">
-                            <label className="block mb-2 font-lato">City / Place</label>
-                            <input type="text" name="city" value={address.city} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                        </div>
-                        <div className="mb-4 flex-1">
-                            <label className="block mb-2 font-lato">Postal Code</label>
-                            <input type="text" name="postalCode" value={address.postalCode} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                        </div>
-                    </div>
-                    <div className="flex gap-4">
-                        <div className="mb-4 flex-1">
-                            <label className="block mb-2 font-lato">State</label>
-                            <input type="text" name="state" value={address.state} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                        </div>
-                        <div className="mb-4 flex-1">
-                            <label className="block mb-2 font-lato">Country</label>
-                            <input type="text" name="country" value={address.country} onChange={handleInputChange} required className="w-full p-2 border border-gray-300 rounded" />
-                        </div>
-                    </div>
-                </form>
-            </div>
+                {/* Shipping Address Section */}
+                <div className="lg:col-span-2">
+                    <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                        <h2 className="text-2xl font-playfair font-bold text-gray-800 mb-6 border-b pb-4 flex items-center gap-3">
+                            <i className="fas fa-map-marker-alt text-secondary"></i> Shipping Address
+                        </h2>
+                        <form onSubmit={handlePlaceOrder} id="checkout-form" className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block mb-2 font-lato text-gray-700 font-medium">Name</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={address.name}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                        placeholder="John Doe"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block mb-2 font-lato text-gray-700 font-medium">Phone</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={address.phone}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                        placeholder="+91 98765 43210"
+                                    />
+                                </div>
+                            </div>
 
-            <div className="flex-[0_0_350px] border border-gray-200 p-6 rounded-lg h-fit">
-                <h3 className="mb-4 text-center font-playfair text-xl text-secondary">Order Summary</h3>
-                <div className="mb-4 max-h-[200px] overflow-y-auto">
-                    {cart.map(item => (
-                        <div key={item._id} className="flex justify-between mb-2 text-sm font-lato">
-                            <span>{item.title} x {item.quantity}</span>
-                            <span>₹{item.price * item.quantity}</span>
-                        </div>
-                    ))}
+                            <div>
+                                <label className="block mb-2 font-lato text-gray-700 font-medium">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={address.email}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                    placeholder="john@example.com"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block mb-2 font-lato text-gray-700 font-medium">Address</label>
+                                <textarea
+                                    name="address"
+                                    value={address.address}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors min-h-[100px]"
+                                    placeholder="Street address, apartment, suite, etc."
+                                ></textarea>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block mb-2 font-lato text-gray-700 font-medium">City / Place</label>
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        value={address.city}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block mb-2 font-lato text-gray-700 font-medium">Postal Code</label>
+                                    <input
+                                        type="text"
+                                        name="postalCode"
+                                        value={address.postalCode}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block mb-2 font-lato text-gray-700 font-medium">State</label>
+                                    <input
+                                        type="text"
+                                        name="state"
+                                        value={address.state}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block mb-2 font-lato text-gray-700 font-medium">Country</label>
+                                    <input
+                                        type="text"
+                                        name="country"
+                                        value={address.country}
+                                        onChange={handleInputChange}
+                                        required
+                                        className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-colors"
+                                    />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div className="border-t border-gray-300 pt-4 flex justify-between font-bold text-lg font-playfair text-secondary">
-                    <span>Total</span>
-                    <span>₹{total.toFixed(2)}</span>
-                </div>
 
-                <div className="mt-8">
-                    <h4 className="mb-2 font-lato font-bold">Payment Method</h4>
-                    <div className="mb-2 flex items-center">
-                        <input
-                            type="radio"
-                            id="online"
-                            name="payment"
-                            value="online"
-                            checked={paymentMethod === 'online'}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="mr-2"
-                        />
-                        <label htmlFor="online" className="ml-2 font-lato">Online Payment</label>
-                    </div>
-                    <div className="mb-4 flex items-center">
-                        <input
-                            type="radio"
-                            id="cod"
-                            name="payment"
-                            value="cod"
-                            checked={paymentMethod === 'cod'}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="mr-2"
-                        />
-                        <label htmlFor="cod" className="ml-2 font-lato">Cash on Delivery</label>
+                {/* Order Summary & Payment Section */}
+                <div className="lg:col-span-1">
+                    <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100 sticky top-24">
+                        <h3 className="text-2xl font-playfair font-bold text-gray-800 mb-6 border-b pb-4">Order Summary</h3>
+
+                        <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {cart.map(item => (
+                                <div key={item._id} className="flex justify-between items-center text-sm font-lato">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative">
+                                            <span className="absolute -top-2 -right-2 bg-gray-200 text-gray-700 text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                                {item.quantity}
+                                            </span>
+                                            <img
+                                                src={item.images[0] ? (item.images[0].startsWith('/') ? `http://localhost:5000${item.images[0]}` : item.images[0]) : 'https://via.placeholder.com/50'}
+                                                alt={item.title}
+                                                className="w-12 h-12 object-cover rounded border border-gray-200"
+                                            />
+                                        </div>
+                                        <span className="text-gray-700 line-clamp-1 max-w-[120px]" title={item.title}>{item.title}</span>
+                                    </div>
+                                    <span className="font-semibold text-gray-800">₹{item.price * item.quantity}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="border-t border-gray-100 pt-4 space-y-2 mb-6">
+                            <div className="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span>₹{total.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-600">
+                                <span>Shipping</span>
+                                <span className="text-green-600 font-medium">Free</span>
+                            </div>
+                            <div className="flex justify-between text-xl font-bold text-gray-800 pt-4 border-t border-gray-100">
+                                <span>Total</span>
+                                <span className="text-secondary">₹{total.toFixed(2)}</span>
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <h4 className="mb-3 font-lato font-bold text-gray-800">Payment Method</h4>
+                            <div className="space-y-3">
+                                <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'online' ? 'border-secondary bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                    <input
+                                        type="radio"
+                                        id="online"
+                                        name="payment"
+                                        value="online"
+                                        checked={paymentMethod === 'online'}
+                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                        className="mr-3 text-secondary focus:ring-secondary"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="font-medium text-gray-800">Online Payment</span>
+                                        <p className="text-xs text-gray-500">Fast and secure</p>
+                                    </div>
+                                    <i className="fas fa-credit-card text-gray-400"></i>
+                                </label>
+                                <label className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'cod' ? 'border-secondary bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                    <input
+                                        type="radio"
+                                        id="cod"
+                                        name="payment"
+                                        value="cod"
+                                        checked={paymentMethod === 'cod'}
+                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                        className="mr-3 text-secondary focus:ring-secondary"
+                                    />
+                                    <div className="flex-1">
+                                        <span className="font-medium text-gray-800">Cash on Delivery</span>
+                                        <p className="text-xs text-gray-500">Pay when you receive</p>
+                                    </div>
+                                    <i className="fas fa-money-bill-wave text-gray-400"></i>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            form="checkout-form"
+                            disabled={loading}
+                            className={`w-full py-4 text-white rounded-lg text-lg font-bold tracking-wide transition-all duration-300 shadow-md ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-secondary hover:shadow-2xl hover:bg-gray-800 transform hover:-translate-y-1 hover:scale-105 active:scale-95'}`}
+                        >
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <i className="fas fa-spinner fa-spin"></i> Processing...
+                                </span>
+                            ) : (
+                                'Place Order'
+                            )}
+                        </button>
+
+                        <div className="mt-4 text-center">
+                            <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
+                                <i className="fas fa-lock"></i> Secure Checkout
+                            </p>
+                        </div>
                     </div>
                 </div>
-
-                <button
-                    type="submit"
-                    form="checkout-form"
-                    disabled={loading}
-                    className={`w-full p-4 text-white border-0 text-base cursor-pointer mt-4 font-lato ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-secondary hover:bg-opacity-90'}`}
-                >
-                    {loading ? 'Placing Order...' : 'Place Order'}
-                </button>
             </div>
         </div>
     );

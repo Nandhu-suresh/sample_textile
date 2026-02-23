@@ -78,4 +78,29 @@ router.get('/me', require('../middleware/auth'), async (req, res) => {
     }
 });
 
+// Update User Profile
+router.put('/profile', require('../middleware/auth'), async (req, res) => {
+    try {
+        const { name, phone, address, place, pincode, state, country } = req.body;
+
+        let user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Update fields
+        if (name) user.name = name;
+        if (phone) user.phone = phone;
+        if (address) user.address = address;
+        if (place) user.place = place;
+        if (pincode) user.pincode = pincode;
+        if (state) user.state = state;
+        if (country) user.country = country;
+
+        await user.save();
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

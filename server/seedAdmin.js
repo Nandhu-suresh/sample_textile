@@ -9,7 +9,7 @@ const seedAdmin = async () => {
         console.log('MongoDB Connected');
 
         const adminEmail = 'admin1@gmail.com';
-        const adminPassword = '123';
+        const adminPassword = 'admin@123';
         const adminName = 'Admin User';
 
         const existingAdmin = await User.findOne({ email: adminEmail });
